@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { env } from "hono/adapter";
 
 interface Env {
   GEMINI_API_KEY?: string;
@@ -29,8 +30,9 @@ app.use("/api/*", async (c, next) => {
     return await next();
   }
 
+  const { APP_SECRET_KEY } = env(c);
   const clientSecret = c.req.header("X-App-Secret-Key");
-  const serverSecret = c.env.APP_SECRET_KEY;
+  const serverSecret = APP_SECRET_KEY;
 
   // 서버에 APP_SECRET_KEY가 설정되어 있을 때만 대조 검증을 진행합니다.
   if (serverSecret && clientSecret !== serverSecret) {
@@ -45,13 +47,14 @@ app.use("/api/*", async (c, next) => {
 
 // 3. 헬스 체크 API (환경변수 설정 및 연결 확인용)
 app.get("/api/health", (c) => {
+  const { GEMINI_API_KEY, OPENAI_API_KEY, APP_SECRET_KEY } = env(c);
   return c.json({
     status: "ok",
     message: "토스 미니앱 공통 API 서버가 정상 동작 중입니다멍! 🐶",
     config: {
-      hasGeminiKey: !!c.env.GEMINI_API_KEY,
-      hasOpenaiKey: !!c.env.OPENAI_API_KEY,
-      hasSecretKey: !!c.env.APP_SECRET_KEY,
+      hasGeminiKey: !!GEMINI_API_KEY,
+      hasOpenaiKey: !!OPENAI_API_KEY,
+      hasSecretKey: !!APP_SECRET_KEY,
     },
   });
 });
@@ -65,11 +68,12 @@ app.post("/api/dream", async (c) => {
       return c.json({ error: "꿈 내용을 입력해 주세요멍! 🐾" }, 400);
     }
 
-    const geminiKey = c.env.GEMINI_API_KEY;
-    const openaiKey = c.env.OPENAI_API_KEY;
+    const { GEMINI_API_KEY, OPENAI_API_KEY } = env(c);
+    const geminiKey = GEMINI_API_KEY;
+    const openaiKey = OPENAI_API_KEY;
 
     if (!geminiKey && !openaiKey) {
-      return c.json({ error: "로컬 환경변수 또는 Cloudflare API 설정이 없습니다. 🐾" }, 500);
+      return c.json({ error: "로컬 환경변수 또는 API 설정이 없습니다. 🐾" }, 500);
     }
 
     const systemPrompt = `너는 신비롭지만 친근하고 귀여운 골든 리트리버 마법사야.
@@ -137,8 +141,9 @@ app.post("/api/tarot", async (c) => {
       return c.json({ error: "알고 싶은 질문을 입력해 주세요멍! 🐾" }, 400);
     }
 
-    const geminiKey = c.env.GEMINI_API_KEY;
-    const openaiKey = c.env.OPENAI_API_KEY;
+    const { GEMINI_API_KEY, OPENAI_API_KEY } = env(c);
+    const geminiKey = GEMINI_API_KEY;
+    const openaiKey = OPENAI_API_KEY;
 
     if (!geminiKey && !openaiKey) {
       return c.json({ error: "API 키 설정이 없습니다. 🐾" }, 500);
@@ -217,8 +222,9 @@ app.post("/api/fortune", async (c) => {
       return c.json({ error: "이름과 생년월일을 정확히 입력해 주세요멍! 🐾" }, 400);
     }
 
-    const geminiKey = c.env.GEMINI_API_KEY;
-    const openaiKey = c.env.OPENAI_API_KEY;
+    const { GEMINI_API_KEY, OPENAI_API_KEY } = env(c);
+    const geminiKey = GEMINI_API_KEY;
+    const openaiKey = OPENAI_API_KEY;
 
     if (!geminiKey && !openaiKey) {
       return c.json({ error: "API 키 설정이 없습니다. 🐾" }, 500);
