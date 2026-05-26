@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# Cloudflare wrangler build and cache
+.wrangler/
+dist/
+
+# Local env secrets
+.dev.vars
+.env

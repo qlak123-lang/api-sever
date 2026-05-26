@@ -1,0 +1,7 @@
+name = "toss-common-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+# 로컬 개발에 사용되는 변수를 나열하거나 Cloudflare 대시보드에서 직접 비밀 환경 변수를 바인딩할 수 있습니다.
+# 예: APP_SECRET_KEY = "your-custom-secret-key"
